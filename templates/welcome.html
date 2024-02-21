@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        /* Navbar styles */
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* User info styles */
+        .user-info {
+            font-weight: bold;
+        }
+
+        /* Sign-out button styles */
+        .sign-out-btn {
+            background-color: #dc3545; /* Bootstrap red color */
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .sign-out-btn:hover {
+            background-color: #c82333; /* Darker red color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>Welcome to World</div>
+        <div class="user-info">{{ user.username }} , {{ user.email }}</div>
+        <button class="sign-out-btn" onclick="location.href='{% url 'logout' %}'">Sign Out</button> <!-- Sign-out button -->
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <h1>Welcome to World!</h1>
+        <!-- Add more content as needed -->
+    </div>
+</body>
+</html>
