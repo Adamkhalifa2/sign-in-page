@@ -1,0 +1,117 @@
+  .navbar-top {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative; /* Make relative to allow absolute positioning */
+            z-index: 999; /* Ensure the top navbar stays on top */
+        }
+
+        /* User info styles */
+        .user-info {
+            font-weight: bold;
+        }
+
+        /* Sign-out button styles */
+        .sign-out-btn {
+            background-color: #dc3545; /* Bootstrap red color */
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .sign-out-btn:hover {
+            background-color: #c82333; /* Darker red color on hover */
+        }
+
+        /* Shopping icons navbar */
+        .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0; /* Adjusted to the left */
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998; /* Ensure the side navbar stays below the top navbar */
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip); /* Display attribute value as tooltip */
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999; /* Ensure tooltip appears above other elements */
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-top: 50px; /* Adjusted margin to accommodate top navbar */
+            margin-left: 70px; /* Adjusted margin to accommodate side navbar */
+        }
+
+        .card {
+            border: 3pt solid gold; /* Adding gold border */
+            transition: transform 0.3s ease;
+            margin-bottom: 20px; /* Adding margin bottom to create gap */
+            position: relative;
+            z-index: 1; /* Ensure cards stay above other content */
+        }
+
+        .card ,.card-body {
+            animation: rainbow 30s infinite; /* Applying animation on hover */
+        }
+
+        @keyframes rainbow {
+            0% { background-color: #FF0000; }
+            16.67% { background-color: #FF7F00; }
+            33.33% { background-color: #FFFF00; }
+            50% { background-color: #00FF00; }
+            66.67% { background-color: #0000FF; }
+            83.33% { background-color: #8B00FF; }
+            100% { background-color: #FF0000; }
+        }
+
+        .card-body {
+            padding: 10px 10px 0; /* Adjusted padding */
+            transition: background-color 0.3s ease; /* Transition for smooth color change */
+        }
+
+        .card-title {
+            margin-bottom: 2rem; /* Added margin bottom to title */
+        }
+        .card-price {
+            margin-bottom: 1.5rem; /* Added margin bottom to title */
+        }
+        .card-text {
+            margin-bottom: 2rem; /* Added margin bottom to title */
+        }

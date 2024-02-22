@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+        }
+          .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            margin-top: 50px;
+            margin-left: 70px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-side">
+    <a href="http://127.0.0.1:8000/welcome/">
+        <i class="fas fa-home" data-tooltip="Home"></i>
+    </a>
+</div>
+<div class="container main-content">
+    
+        {% if results %}
+            <h2>Search Results for "{{ query }}"</h2>
+            <ul>
+                {% for product in results %}
+                    
+                     <li>
+                <img src="{{ product.pimage.url }}" alt="{{ item.product.name }}" width="200" height="200">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.pdescription }}</p>
+                <p>Price: {{ product.price }}</p>
+                     
+            </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No results found for "{{ query }}".</p>
+        {% endif %}
+    </div>
+</body>
+</html>

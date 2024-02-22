@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
     <style>
-        /* Navbar styles */
+        /* Your existing styles */
         .navbar {
             background-color: #333;
             color: white;
@@ -15,14 +17,12 @@
             align-items: center;
         }
 
-        /* User info styles */
         .user-info {
             font-weight: bold;
         }
 
-        /* Sign-out button styles */
         .sign-out-btn {
-            background-color: #dc3545; /* Bootstrap red color */
+            background-color: #dc3545;
             color: white;
             padding: 8px 12px;
             border: none;
@@ -33,21 +33,198 @@
         }
 
         .sign-out-btn:hover {
-            background-color: #c82333; /* Darker red color on hover */
+            background-color: #c82333;
+        }
+
+        .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            margin-top: 50px;
+            margin-left: 70px;
+        }
+
+        .card {
+            border: 3pt solid gold;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card ,.card-body {
+            animation: rainbow 30s infinite;
+        }
+
+        @keyframes rainbow {
+            0% { background-color: #FF0000; }
+            16.67% { background-color: #FF7F00; }
+            33.33% { background-color: #FFFF00; }
+            50% { background-color: #00FF00; }
+            66.67% { background-color: #0000FF; }
+            83.33% { background-color: #8B00FF; }
+            100% { background-color: #FF0000; }
+        }
+
+        .card-body {
+            padding: 20px; /* Added padding */
+            transition: background-color 0.3s ease; /* Transition for smooth color change */
+        }
+
+        .card-title,
+        .card-price,
+        .card-text {
+            margin-bottom: 2rem;
+            background-color: #f8f9fa; /* Grayish-white background color */
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .add-to-cart-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .search-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .search-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Icon animation */
+        @keyframes moveCart {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        .cart-animation {
+            animation: moveCart 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <div>Welcome to World</div>
-        <div class="user-info">{{ user.username }} , {{ user.email }}</div>
-        <button class="sign-out-btn" onclick="location.href='{% url 'logout' %}'">Sign Out</button> <!-- Sign-out button -->
-    </div>
 
-    <!-- Main content -->
-    <div class="container">
-        <h1>Welcome to World!</h1>
-        <!-- Add more content as needed -->
+<!-- Navbar -->
+<div class="navbar">
+    <div></div>
+    <div class="user-info"> Welcome  {{ user.username }}, {{ user.email }}</div>
+    <button class="sign-out-btn" onclick="location.href='{% url 'nice:logout' %}'">Sign Out</button>
+</div>
+
+<!-- Side Navbar -->
+<div class="navbar-side">
+    <a href="http://127.0.0.1:8000/cart/">
+        <i class="fas fa-shopping-cart" data-tooltip="Shopping Cart"></i>
+    </a>
+    <a href="http://127.0.0.1:8000/cart/">
+        <i class="fas fa-heart" data-tooltip="Wishlist"></i>
+    </a>
+    <a href="http://127.0.0.1:8000/update-profile/">
+        <i class="fas fa-user" data-tooltip="User Profile"></i>
+    </a>
+</div>
+<!-- Main Content -->
+<div class="container main-content">
+    <h1>World Online Market!</h1>
+
+    <!-- Product Section -->
+    <div class="container mt-5">
+        <h2 class="mb-4">Products Available</h2>
+
+        <!-- Search form -->
+        <form class="form-inline mb-4" action="{% url 'nice:search_results' %}" method="GET">
+            <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">Search</button>
+        </form>
+
+        <div class="row">
+            {% for product in produce %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ product.name }}</h4>
+                        <h5 class="card-price">Ksh {{ product.price }}</h5>
+                        <p class="card-text">{{ product.pdescription }}</p>
+                        <a href="{% url 'nice:add' product.id %}" class="btn btn-primary add-to-cart-btn" onclick="addToCart(this)">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    function addToCart(button) {
+        var icon = button.querySelector('i.fa-shopping-cart');
+        icon.classList.add('cart-animation');
+        setTimeout(function() {
+            icon.classList.remove('cart-animation');
+        }, 1000);
+    }
+</script>
+
 </body>
 </html>

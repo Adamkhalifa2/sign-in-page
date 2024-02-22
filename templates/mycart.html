@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+    <title>My Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        img {
+            border-radius: 5px;
+        }
+        h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        .total-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none; /* Added to remove underline from the anchor tag */
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: 1px solid #dc3545; /* Added border */
+        }
+        .btn-danger:hover {
+            background-color: #bd2130; /* Darker red on hover */
+            border: 1px solid #bd2130; /* Darker red border on hover */
+        }
+         .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+          .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            margin-top: 50px;
+            margin-left: 70px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-side">
+    <a href="http://127.0.0.1:8000/welcome/">
+        <i class="fas fa-home" data-tooltip="Home"></i>
+    </a>
+    <a href="http://127.0.0.1:8000/cart/">
+        <i class="fas fa-heart" data-tooltip="Wishlist"></i>
+    </a>
+    <a href="http://127.0.0.1:8000/update-profile/">
+        <i class="fas fa-user" data-tooltip="User Profile"></i>
+    </a>
+</div>
+<div class="container main-content">
+    <h1>Products Selected</h1>
+    <ul>
+        {% for item in cart_items %}
+            <li>
+                <img src="{{ item.product.pimage.url }}" alt="{{ item.product.name }}" width="200" height="200">
+                <h3>{{ item.product.name }}</h3>
+                <p>{{ item.product.pdescription }}</p>
+                <p>Quantity: 
+                    <!-- Decrease quantity icon -->
+                    <a href="{% url 'nice:decrease_quantity' item.id %}">
+                        <i class="fas fa-minus"></i>
+                    </a>
+                    {{ item.quantity }}
+                    <!-- Increase quantity icon -->
+                    <a href="{% url 'nice:increase_quantity' item.id %}">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </p>
+                <p>Price: {{ item.product.price }}</p>
+                <button type="submit" class="btn btn-danger"><a href="{% url 'nice:delete' item.id %}">Delete</a></button>
+            </li>
+        {% empty %}
+            <li>
+                <p>You have not added anything to your cart.</p>
+            </li>
+        {% endfor %}
+    </ul>
+    <p class="total-price">Total price: kes {{ price }}</p>
+</div>
+</body>
+</html>

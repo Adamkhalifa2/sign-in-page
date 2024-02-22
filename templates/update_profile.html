@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+    <title>Update Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: calc(100% - 12px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .profile-info {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .profile-info p {
+            margin-bottom: 10px;
+        }
+
+        .profile-info strong {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+         .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+       
+    </style>
+</head>
+<body>
+<div class="navbar-side">
+    <a href="http://127.0.0.1:8000/welcome/">
+        <i class="fas fa-home" data-tooltip="Home"></i>
+    </a>
+</div>
+    <div class="container">
+        <h1>Update Your Profile</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="{{ user.location }}" required>
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}" required>
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            <button type="submit">Update</button>
+        </form>
+
+        <!-- Display User's Data -->
+        <div class="profile-info">
+            <h2>Your Profile Information</h2>
+            <p><strong>First Name:</strong> {{ user.profile.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user.profile.last_name }}</p>
+            <p><strong>Location:</strong> {{ user.profile.location }}</p>
+            <p><strong>Phone Number:</strong> {{ user.profile.phone_number }}</p>
+            <p><strong>Email Address:</strong> {{ user.profile.email }}</p>
+        </div>
+    </div>
+</body>
+</html>
