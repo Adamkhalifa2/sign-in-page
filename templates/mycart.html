@@ -116,6 +116,20 @@
             margin-top: 50px;
             margin-left: 70px;
         }
+         .btn-primary-custom {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none; /* Added to remove underline from the anchor tag */
+        }
+        .btn-primary-custom:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -159,6 +173,11 @@
         {% endfor %}
     </ul>
     <p class="total-price">Total price: kes {{ price }}</p>
+   <button class="btn-primary-custom">
+  <a href="{% url 'nice:make_payment' %}" style="color: white;">Proceed to Payment</a>
+
+</button>
+
 </div>
 </body>
 </html>

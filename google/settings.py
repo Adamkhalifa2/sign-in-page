@@ -146,3 +146,26 @@ STATIC_URL = 'static/'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MPESA_ENVIRONMENT = 'sandbox'
+
+# declare consumer key and consumer secret
+# consumer seret is password assigned to consumer key ..Key is used to request access to API provide
+
+MPESA_CONSUMER_KEY = 'resXgqw7iwMRym7MhH7GRwdOPDdTxxrvhcaQ79VcFGR6whtB'
+MPESA_CONSUMER_SECRET = 'snIcMn444ATUiQ46OtZqx4ZYoXDR9wghF9ZYGGBrIOMv2cjNBtqGz5vp99G5PmPn'
+
+MPESA_SHORTCODE = '174379'
+
+MPESA_EXPRESS_SHORTCODE = '174379'
+
+MPESA_SHORTCODE_TYPE = 'paybill'
+
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+
+MPESA_INITIATOR_USERNAME = 'testapi'
+
+MPESA_INITIATOR_SECURITY_CREDENTIAL = 'Safaricom999!*!'
+
+MPESA_PHONE_NUMBER = '254700600163'
+

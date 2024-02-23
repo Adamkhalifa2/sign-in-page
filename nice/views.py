@@ -1,15 +1,17 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout, authenticate, login
-from allauth.socialaccount.models import SocialAccount
 from django.urls import reverse_lazy
 from django.views import generic
-from nice.models import Product, Item, Profile
-from .forms import LoginForm
-
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.http import HttpResponse
+import requests
+from decimal import Decimal
 
-
+from .forms import PaymentForm
+from .models import Product, Item, Profile
+from allauth.socialaccount.models import SocialAccount
 
 @login_required
 def update_profile(request):
@@ -21,7 +23,7 @@ def update_profile(request):
         profile.phone_number = request.POST.get('phone_number', '')
         profile.email = request.POST.get('email', '')
         profile.save()
-        return redirect('nice:update_profile')  # Change 'welcome' to your welcome page URL name
+        return redirect('nice:update_profile')
     return render(request, 'update_profile.html')
 
 
@@ -45,11 +47,11 @@ def redirect_to_welcome(user):
 
 def welcome_view(request):
     if request.user.is_authenticated:
-        produce = Product.objects.all()
+        products = Product.objects.all()
         context = {
-            'produce': produce
+            'products': products
         }
-        return render(request, 'welcome.html', context)  # Pass context as the second argument
+        return render(request, 'welcome.html', context )
     return redirect('nice:home')
 
 
@@ -67,9 +69,9 @@ class SignUpView(generic.CreateView):
 def cart_items(request):
     cart_items = Item.objects.filter(user=request.user)
     price = sum(item.product.price * item.quantity for item in cart_items)
-    produce = Product.objects.all()
-
-    return render(request, 'mycart.html', {'cart_items': cart_items, 'price': price})
+    formatted_price = "{:.2f}".format(price)  # Format the price with two decimal places
+    products = Product.objects.all()
+    return render(request, 'mycart.html', {'cart_items': cart_items, 'price': formatted_price, 'products': products})
 
 
 def add_item(request, product_id):
@@ -97,35 +99,86 @@ def search_results(request):
 
 def increase_quantity(request, item_id):
     try:
-        # Retrieve the cart item
         cart_item = Item.objects.get(id=item_id)
-
-        # Increase the quantity by 1
         cart_item.quantity += 1
         cart_item.save()
-
-        # Redirect back to the cart page
-        return redirect('nice:cart')  # Assuming your cart URL name is 'cart'
+        return redirect('nice:cart')
     except Item.DoesNotExist:
-        # Handle the case where the cart item does not exist
         return redirect('nice:cart')
 
 
 def decrease_quantity(request, item_id):
     try:
-        # Retrieve the cart item
         cart_item = Item.objects.get(id=item_id)
-
-        # Decrease the quantity by 1 if it's greater than 1
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
         else:
-            # If the quantity is already 1, remove the item from the cart
             cart_item.delete()
-
-        # Redirect back to the cart page
-        return redirect('nice:cart')  # Assuming your cart URL name is 'cart'
-    except Item.DoesNotExist:
-        # Handle the case where the cart item does not exist
         return redirect('nice:cart')
+    except Item.DoesNotExist:
+        return redirect('nice:cart')
+
+
+def make_payment(request):
+    total_price = Decimal(0)
+    if request.method == 'POST':
+        cart_items = Item.objects.filter(user=request.user)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
+
+            # Validate the phone number
+            if not phone_number:
+                return HttpResponse("Please provide a phone number.")
+
+            try:
+                phone_number = int(phone_number)
+            except ValueError:
+                return HttpResponse("Invalid phone number format.")
+
+            # Call your payment API with the provided data
+            response = make_payment_api_call(float(total_price), phone_number)
+
+            # Check the response from the API and handle accordingly
+            if response.status_code == 200:
+                # Clear the cart items after successful payment
+                cart_items.delete()
+
+                return HttpResponse("Payment successful!")  # You can customize this message
+            else:
+                return HttpResponse("Payment failed. Please try again.")  # You can customize this message
+    else:
+        form = PaymentForm()
+
+    return render(request, 'payment_form.html', {'total_price': total_price, 'form': form})
+def make_payment_api_call(total_price, phone_number):
+    url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+    headers = {
+        'Authorization': 'Bearer h1PIG1vJa3k3Gq7d6QNu5ntYhJTj',  # Replace with your actual access token
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "BusinessShortCode": 174379,
+        "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjQwMjE5MDg1MjAz",
+        "Timestamp": "20240219085203",
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": total_price,  # Corrected from amount to total_price
+        "PartyA": 254700600163,
+        "PartyB": 174379,
+        "PhoneNumber": phone_number,
+        "CallBackURL": "https://mydomain.com/path",
+        "AccountReference": "CompanyAdam",
+        "TransactionDesc": "Payment ADAM"
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response
+
+
+def send_payment_notification(email, amount):
+    subject = 'Payment Notification'
+    message = f'Your payment of ${amount} has been successfully processed.'
+    from_email = 'your_email@example.com'  # Your email address
+    recipient_list = [email]
+    send_mail(subject, message, from_email, recipient_list)

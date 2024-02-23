@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Payment Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .alert-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            padding: 20px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #721c24;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 100px;
+            color: #333;
+        }
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-side">
+    <a href="http://127.0.0.1:8000/welcome/">
+        <i class="fas fa-home" data-tooltip="Home"></i>
+    </a>
+</div>
+<div class="alert-box">
+    <p>Kindly sign up in the user profile icon before proceeding with shopping and payment.</p>
+</div>
+<h1>Make Payment</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="phone_number">Phone Number:</label>
+    <input type="text" id="phone_number" name="phone_number" required><br><br>
+    <input type="hidden" name="total_price" value="{{ total_price }}">
+    <button type="submit">Pay Now</button>
+</form>
+</body>
+</html>

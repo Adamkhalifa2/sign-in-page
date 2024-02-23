@@ -79,7 +79,7 @@
         }
 
         .main-content {
-            margin-top: 50px;
+            margin-top: 100px; /* Adjusted margin top */
             margin-left: 70px;
         }
 
@@ -158,6 +158,21 @@
         .cart-animation {
             animation: moveCart 0.5s ease-in-out;
         }
+
+        /* New styles for the well box */
+        .well-box {
+            position: fixed;
+            top: 140px; /* Adjusted top position */
+            right: 20px;
+            width: 300px;
+            padding: 20px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #721c24;
+            z-index: 999; /* Ensure it appears above other content */
+        }
     </style>
 </head>
 <body>
@@ -167,6 +182,11 @@
     <div></div>
     <div class="user-info"> Welcome  {{ user.username }}, {{ user.email }}</div>
     <button class="sign-out-btn" onclick="location.href='{% url 'nice:logout' %}'">Sign Out</button>
+</div>
+
+<!-- Well box -->
+<div class="well-box">
+    <p>Kindly sign up in the user profile icon before proceeding with shopping and payment.</p>
 </div>
 
 <!-- Side Navbar -->
@@ -196,7 +216,7 @@
         </form>
 
         <div class="row">
-            {% for product in produce %}
+            {% for product in products %}
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}" alt="{{ product.name }}">
