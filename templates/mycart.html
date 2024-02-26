@@ -174,7 +174,11 @@
     </ul>
     <p class="total-price">Total price: kes {{ price }}</p>
    <button class="btn-primary-custom">
-  <a href="{% url 'nice:make_payment' %}" style="color: white;">Proceed to Payment</a>
+  <a href="{% url 'nice:make_payment' %}" style="color: white;">Proceed to Payment with MPESA</a>
+
+</button>
+<button class="btn-primary-custom">
+  <a href="{% url 'nice:payment' %}" style="color: white;">Proceed to Payment with PayPal</a>
 
 </button>
 

@@ -84,11 +84,11 @@
         }
 
         .card {
-            border: 3pt solid gold;
-            transition: transform 0.3s ease;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+           border: 3pt solid gold;
+          transition: transform 0.3s ease-in-out; /* Added transition */
+          margin-bottom: 20px;
+          position: relative;
+          z-index: 1;
         }
 
         .card ,.card-body {
@@ -108,6 +108,7 @@
         .card-body {
             padding: 20px; /* Added padding */
             transition: background-color 0.3s ease; /* Transition for smooth color change */
+          
         }
 
         .card-title,
@@ -219,7 +220,7 @@
             {% for product in products %}
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}" alt="{{ product.name }}">
+                   <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}" alt="{{ product.name }}">
                     <div class="card-body">
                         <h4 class="card-title">{{ product.name }}</h4>
                         <h5 class="card-price">Ksh {{ product.price }}</h5>

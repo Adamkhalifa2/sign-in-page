@@ -1,3 +1,4 @@
+import paypalrestsdk
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout, authenticate, login
@@ -9,9 +10,13 @@ from django.http import HttpResponse
 import requests
 from decimal import Decimal
 
+from paypalrestsdk import Payment
+
+from google import settings
 from .forms import PaymentForm
 from .models import Product, Item, Profile
 from allauth.socialaccount.models import SocialAccount
+
 
 @login_required
 def update_profile(request):
@@ -51,7 +56,7 @@ def welcome_view(request):
         context = {
             'products': products
         }
-        return render(request, 'welcome.html', context )
+        return render(request, 'welcome.html', context)
     return redirect('nice:home')
 
 
@@ -153,10 +158,12 @@ def make_payment(request):
         form = PaymentForm()
 
     return render(request, 'payment_form.html', {'total_price': total_price, 'form': form})
+
+
 def make_payment_api_call(total_price, phone_number):
     url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
     headers = {
-        'Authorization': 'Bearer h1PIG1vJa3k3Gq7d6QNu5ntYhJTj',  # Replace with your actual access token
+        'Authorization': 'Bearer sdfGHhzG75T0gWnvDtwyYhEEaqmx',  # Replace with your actual access token
         'Content-Type': 'application/json'
     }
     data = {
@@ -182,3 +189,72 @@ def send_payment_notification(email, amount):
     from_email = 'your_email@example.com'  # Your email address
     recipient_list = [email]
     send_mail(subject, message, from_email, recipient_list)
+
+
+def payment(request):
+    if request.method == 'POST':
+        # Assuming you have retrieved cart items and calculated total_price as in your original code
+        cart_items = Item.objects.filter(user=request.user)
+
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        # Define your fixed exchange rate
+        ksh_to_usd_rate = Decimal('0.0093 ')
+
+        # Convert total_price to USD
+        usd_total_price = total_price * ksh_to_usd_rate
+
+        # Format usd_total_price to ensure it has exactly two decimal places
+        usd_total_price_str = '{:.2f}'.format(usd_total_price)
+        # PayPal API configuration
+        paypal_client_id = settings.PAYPAL_CLIENT_ID
+        paypal_client_secret = settings.PAYPAL_CLIENT_SECRET
+        paypal_mode = settings.PAYPAL_MODE
+
+        # Configure PayPal SDK
+        paypalrestsdk.configure({
+            "mode": paypal_mode,
+            "client_id": paypal_client_id,
+            "client_secret": paypal_client_secret
+        })
+
+        # Construct PayPal payment object
+        payment = Payment({
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": "http://127.0.0.1:8000/payment/execute/",
+                "cancel_url": "http://127.0.0.1:8000/payment/cancel/"
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": [{
+                        "name": "Item",
+                        "sku": "item",
+                        "price": usd_total_price_str,
+                        "currency": "USD",
+                        "quantity": 1
+                    }]
+                },
+                "amount": {
+                    "total": usd_total_price_str,
+                    "currency": "USD"
+                },
+                "description": "Payment for items."
+            }]
+        })
+
+        # Create PayPal payment
+        if payment.create():
+            request.session['payment_id'] = payment.id
+            for link in payment.links:
+                if link.method == 'REDIRECT':
+                    redirect_url = str(link.href)
+                    return redirect(redirect_url)
+        else:
+            return HttpResponse("Payment creation failed. Please try again.")
+
+    # If the request method is not POST or payment creation fails,
+    # render a template containing the payment form
+    return render(request, 'payment.html')

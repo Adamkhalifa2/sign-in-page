@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+</head>
+<body>
+    <h1>Make a Payment</h1>
+    <form action="{% url 'nice:payment' %}" method="post">
+        {% csrf_token %}
+        <!-- Include any necessary fields for the payment -->
+        <!-- For example, you might include fields for card details, address, etc. -->
+        
+        <!-- Assuming you have already calculated the total price -->
+        <input type="hidden" name="total_price_in_usd" value="{{ total_price_in_usd }}">
+        
+        <!-- Submit button -->
+        <button type="submit">Pay Now</button>
+    </form>
+</body>
+</html>

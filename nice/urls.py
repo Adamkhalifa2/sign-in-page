@@ -17,4 +17,5 @@ urlpatterns = [
     path('increase_quantity/<int:item_id>/', views.increase_quantity, name='increase_quantity'),
     path('update-profile/', views.update_profile, name='update_profile'),
     path('make-payment', views.make_payment, name='make_payment'),
+    path('payment/', views.payment, name='payment'),
 ]
