@@ -8,102 +8,144 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>Payment Form</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .alert-box {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-            padding: 20px;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            color: #721c24;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 100px;
-            color: #333;
-        }
-        form {
-            width: 50%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        .navbar-side {
-            background-color: #333;
-            color: white;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 998;
-        }
-        .navbar-side i {
-            margin-bottom: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            position: relative;
-        }
-        .navbar-side i::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: 50%;
-            left: calc(100% + 10px);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px;
-            border-radius: 3px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            transform: translateY(-50%);
-            z-index: 999;
-        }
-        .navbar-side i:hover::after {
-            opacity: 1;
-        }
+        .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1); /* Fully opaque white background */
+    z-index: 9999;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.alert-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    padding: 20px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #721c24;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    color: #333;
+}
+
+form {
+    width: 50%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.navbar-side {
+    background-color: #333;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 998;
+}
+
+.navbar-side i {
+    margin-bottom: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    position: relative;
+}
+
+.navbar-side i::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    transform: translateY(-50%);
+    z-index: 999;
+}
+
+.navbar-side i:hover::after {
+    opacity: 1;
+}
+
+
     </style>
 </head>
 <body>
+<div class="loader-container" id="loader-container">
+    <div class="loader"></div>
+</div>
 <div class="navbar-side">
     <a href="http://127.0.0.1:8000/welcome/">
         <i class="fas fa-home" data-tooltip="Home"></i>
@@ -120,5 +162,14 @@
     <input type="hidden" name="total_price" value="{{ total_price }}">
     <button type="submit">Pay Now</button>
 </form>
+<script>
+    // Show loader for 5 seconds
+    window.onload = function () {
+        var loaderContainer = document.getElementById('loader-container');
+        setTimeout(function () {
+            loaderContainer.style.display = 'none';
+        }, 5000); // 5 seconds
+    };
+</script>
 </body>
 </html>

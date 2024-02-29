@@ -5,17 +5,17 @@ from django.contrib.auth import logout as auth_logout, authenticate, login
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.http import HttpResponse
 import requests
 from decimal import Decimal
-
 from paypalrestsdk import Payment
-
+from twilio.rest import Client
 from google import settings
 from .forms import PaymentForm
 from .models import Product, Item, Profile
 from allauth.socialaccount.models import SocialAccount
+
+
 
 
 @login_required
@@ -129,7 +129,7 @@ def make_payment(request):
     total_price = Decimal(0)
     if request.method == 'POST':
         cart_items = Item.objects.filter(user=request.user)
-        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        total_price = sum(Decimal(item.product.price) * item.quantity for item in cart_items)
         form = PaymentForm(request.POST)
         if form.is_valid():
             phone_number = form.cleaned_data['phone_number']
@@ -138,20 +138,32 @@ def make_payment(request):
             if not phone_number:
                 return HttpResponse("Please provide a phone number.")
 
+            # Ensure phone number is in a valid format
             try:
                 phone_number = int(phone_number)
             except ValueError:
                 return HttpResponse("Invalid phone number format.")
 
-            # Call your payment API with the provided data
-            response = make_payment_api_call(float(total_price), phone_number)
+            response = make_payment_api_call(total_price, phone_number)
 
-            # Check the response from the API and handle accordingly
             if response.status_code == 200:
-                # Clear the cart items after successful payment
-                cart_items.delete()
+                # Payment successful, send a notification to the specific phone number
+                user = request.user
+                user_profile = user.profile  # Assuming you have a UserProfile model linked to the user
 
-                return HttpResponse("Payment successful!")  # You can customize this message
+                product_details = "\n".join(
+                    [f"Name: {item.product.name}, Price: {item.product.price}, Description: {item.product.pdescription}"
+                     for item in cart_items])
+
+                user_info = f"User Information:\nName: {user.profile.first_name} {user.profile.last_name}\nEmail: {user.profile.email}\nLocation: {user_profile.location}"
+
+                try:
+                    send_notification("254700600163", phone_number, product_details, user_info)
+                    cart_items.delete()
+                    return HttpResponse("Payment successful! Notification sent.")  # You can customize this message
+                except Exception as e:
+                    # Handle any exception that might occur during notification sending
+                    return HttpResponse(f"Payment successful, but failed to send notification: {str(e)}")
             else:
                 return HttpResponse("Payment failed. Please try again.")  # You can customize this message
     else:
@@ -160,10 +172,28 @@ def make_payment(request):
     return render(request, 'payment_form.html', {'total_price': total_price, 'form': form})
 
 
+def send_notification(receiver_phone_number, phone_number, product_details, user_info):
+    account_sid = 'ACbca216ca2dd1774bf9f022f637852eb3'
+    auth_token = '8c143f7a120015ac5f07e4873d725bb9'
+    twilio_phone_number = '14242066602'
+
+    client = Client(account_sid, auth_token)
+
+    message_body = f"Client with phone number {phone_number} has made a successful payment.\n\n"
+    message_body += "Product Details:\n" + product_details + "\n\n"
+    message_body += user_info
+
+    message = client.messages.create(
+        body=message_body,
+        from_=twilio_phone_number,
+        to=receiver_phone_number
+    )
+
+
 def make_payment_api_call(total_price, phone_number):
     url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
     headers = {
-        'Authorization': 'Bearer sdfGHhzG75T0gWnvDtwyYhEEaqmx',  # Replace with your actual access token
+        'Authorization': 'Bearer cy60tXBHlEhuUWkeeom4VAGEBQo7',
         'Content-Type': 'application/json'
     }
     data = {
@@ -171,7 +201,7 @@ def make_payment_api_call(total_price, phone_number):
         "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjQwMjE5MDg1MjAz",
         "Timestamp": "20240219085203",
         "TransactionType": "CustomerPayBillOnline",
-        "Amount": total_price,  # Corrected from amount to total_price
+        "Amount": total_price,
         "PartyA": 254700600163,
         "PartyB": 174379,
         "PhoneNumber": phone_number,
@@ -183,41 +213,29 @@ def make_payment_api_call(total_price, phone_number):
     return response
 
 
-def send_payment_notification(email, amount):
-    subject = 'Payment Notification'
-    message = f'Your payment of ${amount} has been successfully processed.'
-    from_email = 'your_email@example.com'  # Your email address
-    recipient_list = [email]
-    send_mail(subject, message, from_email, recipient_list)
-
-
 def payment(request):
     if request.method == 'POST':
-        # Assuming you have retrieved cart items and calculated total_price as in your original code
+
         cart_items = Item.objects.filter(user=request.user)
 
         total_price = sum(item.product.price * item.quantity for item in cart_items)
-        # Define your fixed exchange rate
+
         ksh_to_usd_rate = Decimal('0.0093 ')
 
-        # Convert total_price to USD
         usd_total_price = total_price * ksh_to_usd_rate
 
-        # Format usd_total_price to ensure it has exactly two decimal places
         usd_total_price_str = '{:.2f}'.format(usd_total_price)
-        # PayPal API configuration
+
         paypal_client_id = settings.PAYPAL_CLIENT_ID
         paypal_client_secret = settings.PAYPAL_CLIENT_SECRET
         paypal_mode = settings.PAYPAL_MODE
 
-        # Configure PayPal SDK
         paypalrestsdk.configure({
             "mode": paypal_mode,
             "client_id": paypal_client_id,
             "client_secret": paypal_client_secret
         })
 
-        # Construct PayPal payment object
         payment = Payment({
             "intent": "sale",
             "payer": {
@@ -245,7 +263,6 @@ def payment(request):
             }]
         })
 
-        # Create PayPal payment
         if payment.create():
             request.session['payment_id'] = payment.id
             for link in payment.links:
@@ -255,6 +272,4 @@ def payment(request):
         else:
             return HttpResponse("Payment creation failed. Please try again.")
 
-    # If the request method is not POST or payment creation fails,
-    # render a template containing the payment form
     return render(request, 'payment.html')

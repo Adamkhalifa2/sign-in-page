@@ -5,9 +5,9 @@ from .views import SignUpView
 app_name = 'nice'
 
 urlpatterns = [
-    path("", views.home, name='home'),  # URL for the home page
-    path("welcome/", views.welcome_view, name='welcome'),  # URL for the welcome page
-    path("logout/", views.logout, name='logout'),  # URL for logout
+    path("", views.home, name='home'),
+    path("welcome/", views.welcome_view, name='welcome'),
+    path("logout/", views.logout, name='logout'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path("cart/", views.cart_items, name='cart'),
     path("add/<int:product_id>/", views.add_item, name='add'),
@@ -18,4 +18,5 @@ urlpatterns = [
     path('update-profile/', views.update_profile, name='update_profile'),
     path('make-payment', views.make_payment, name='make_payment'),
     path('payment/', views.payment, name='payment'),
+
 ]

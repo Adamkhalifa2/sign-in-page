@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
+    <title>Welcome to SuperMart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Your existing styles */
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Navbar */
         .navbar {
-            background-color: #333;
+            background-color: #33ccff;
             color: white;
-            padding: 10px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -22,9 +28,9 @@
         }
 
         .sign-out-btn {
-            background-color: #dc3545;
+            background-color: #ff6666;
             color: white;
-            padding: 8px 12px;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -33,9 +39,10 @@
         }
 
         .sign-out-btn:hover {
-            background-color: #c82333;
+            background-color: #ff3333;
         }
 
+        /* Side Navbar */
         .navbar-side {
             background-color: #333;
             color: white;
@@ -78,50 +85,111 @@
             opacity: 1;
         }
 
+        /* Main Content */
         .main-content {
-            margin-top: 100px; /* Adjusted margin top */
+            margin-top: 100px;
             margin-left: 70px;
         }
 
-        .card {
-           border: 3pt solid gold;
-          transition: transform 0.3s ease-in-out; /* Added transition */
-          margin-bottom: 20px;
-          position: relative;
-          z-index: 1;
+        /* Loader */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color: rgba(0, 128, 0, 1); /* Fully opaque background */
         }
 
-        .card ,.card-body {
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #33ccff;
+            border-radius: 50%;
+            animation: circle-ring-animation 1.2s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .circle-ring-loader:nth-child(2) {
+            animation-delay: -1.1s; /* Delay for the second ring */
+        }
+
+        .circle-ring-loader:nth-child(3) {
+            animation-delay: -1s; /* Delay for the third ring */
+        }
+
+        @keyframes circle-ring-animation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            border: 3pt solid gold;
+            transition: transform 0.3s ease-in-out;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        .card,
+        .card-body {
             animation: rainbow 30s infinite;
         }
 
         @keyframes rainbow {
-            0% { background-color: #FF0000; }
-            16.67% { background-color: #FF7F00; }
-            33.33% { background-color: #FFFF00; }
-            50% { background-color: #00FF00; }
-            66.67% { background-color: #0000FF; }
-            83.33% { background-color: #8B00FF; }
-            100% { background-color: #FF0000; }
+            0% {
+                background-color: #FF0000;
+            }
+            16.67% {
+                background-color: #FF7F00;
+            }
+            33.33% {
+                background-color: #FFFF00;
+            }
+            50% {
+                background-color: #00FF00;
+            }
+            66.67% {
+                background-color: #0000FF;
+            }
+            83.33% {
+                background-color: #8B00FF;
+            }
+            100% {
+                background-color: #FF0000;
+            }
         }
 
         .card-body {
-            padding: 20px; /* Added padding */
-            transition: background-color 0.3s ease; /* Transition for smooth color change */
-          
+            padding: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .card-title,
         .card-price,
         .card-text {
             margin-bottom: 2rem;
-            background-color: #f8f9fa; /* Grayish-white background color */
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 20px;
         }
 
         .add-to-cart-btn {
-            background-color: #007bff;
+            background-color: #33ccff;
             color: white;
             border: none;
             border-radius: 5px;
@@ -131,11 +199,11 @@
         }
 
         .add-to-cart-btn:hover {
-            background-color: #0056b3;
+            background-color: #0099cc;
         }
 
         .search-btn {
-            background-color: #28a745;
+            background-color: #ff6666;
             color: white;
             border: none;
             border-radius: 5px;
@@ -146,14 +214,20 @@
         }
 
         .search-btn:hover {
-            background-color: #218838;
+            background-color: #ff3333;
         }
 
         /* Icon animation */
         @keyframes moveCart {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
         }
 
         .cart-animation {
@@ -163,89 +237,150 @@
         /* New styles for the well box */
         .well-box {
             position: fixed;
-            top: 140px; /* Adjusted top position */
+            top: 140px;
             right: 20px;
             width: 300px;
             padding: 20px;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
+            background-color: #ffcccc;
+            border: 1px solid #ff6666;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            color: #721c24;
-            z-index: 999; /* Ensure it appears above other content */
+            color: #ff3333;
+            z-index: 999;
+        }
+
+        /* Animation for welcome text */
+        @keyframes showWelcomeText {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Welcome text style */
+        .welcome-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #33ccff;
+            animation: showWelcomeText 2s ease forwards;
+            z-index: 1000;
+        }
+
+        /* Hide loader after 5 seconds */
+        @keyframes hideLoader {
+            0% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        .loader-container.show {
+            animation: hideLoader 5s ease forwards;
         }
     </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<div class="navbar">
-    <div></div>
-    <div class="user-info"> Welcome  {{ user.username }}, {{ user.email }}</div>
-    <button class="sign-out-btn" onclick="location.href='{% url 'nice:logout' %}'">Sign Out</button>
-</div>
-
-<!-- Well box -->
-<div class="well-box">
-    <p>Kindly sign up in the user profile icon before proceeding with shopping and payment.</p>
-</div>
-
-<!-- Side Navbar -->
-<div class="navbar-side">
-    <a href="http://127.0.0.1:8000/cart/">
-        <i class="fas fa-shopping-cart" data-tooltip="Shopping Cart"></i>
-    </a>
-    <a href="http://127.0.0.1:8000/cart/">
-        <i class="fas fa-heart" data-tooltip="Wishlist"></i>
-    </a>
-    <a href="http://127.0.0.1:8000/update-profile/">
-        <i class="fas fa-user" data-tooltip="User Profile"></i>
-    </a>
-</div>
-<!-- Main Content -->
-<div class="container main-content">
-    <h1>World Online Market!</h1>
-
-    <!-- Product Section -->
-    <div class="container mt-5">
-        <h2 class="mb-4">Products Available</h2>
-
-        <!-- Search form -->
-        <form class="form-inline mb-4" action="{% url 'nice:search_results' %}" method="GET">
-            <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">Search</button>
-        </form>
-
-        <div class="row">
-            {% for product in products %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                   <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}" alt="{{ product.name }}">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ product.name }}</h4>
-                        <h5 class="card-price">Ksh {{ product.price }}</h5>
-                        <p class="card-text">{{ product.pdescription }}</p>
-                        <a href="{% url 'nice:add' product.id %}" class="btn btn-primary add-to-cart-btn" onclick="addToCart(this)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+    <!-- Loader and Welcome Text Container -->
+    <div class="loader-container" id="loader-container">
+        <div class="welcome-text">Welcome {{ user.username }}</div>
+        <div class="loader">
+            <div class="circle-ring-loader"></div>
+            <div class="circle-ring-loader"></div>
+            <div class="circle-ring-loader"></div>
         </div>
     </div>
-</div>
 
-<!-- JavaScript -->
-<script>
-    function addToCart(button) {
-        var icon = button.querySelector('i.fa-shopping-cart');
-        icon.classList.add('cart-animation');
-        setTimeout(function() {
-            icon.classList.remove('cart-animation');
-        }, 1000);
-    }
-</script>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div></div>
+        <div class="user-info"> Welcome  {{ user.username }}, {{ user.email }}</div>
+        <button class="sign-out-btn" onclick="location.href='{% url 'nice:logout' %}'">Sign Out</button>
+    </div>
 
+    <!-- Well box -->
+    <div class="well-box">
+        <p>Welcome to SuperMart! Please sign up to enjoy shopping and payment.</p>
+    </div>
+
+    <!-- Side Navbar -->
+    <div class="navbar-side">
+        <a href="http://127.0.0.1:8000/cart/">
+            <i class="fas fa-shopping-cart" data-tooltip="Shopping Cart"></i>
+        </a>
+        <a href="http://127.0.0.1:8000/cart/">
+            <i class="fas fa-heart" data-tooltip="Wishlist"></i>
+        </a>
+        <a href="http://127.0.0.1:8000/update-profile/">
+            <i class="fas fa-user" data-tooltip="User Profile"></i>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <h1>Welcome to SuperMart - Your Ultimate Shopping Destination!</h1>
+
+        <!-- Product Section -->
+        <div class="container mt-5">
+            <h2 class="mb-4">Explore Our Amazing Products</h2>
+
+            <!-- Search form -->
+            <form class="form-inline mb-4" action="{% url 'nice:search_results' %}" method="GET">
+                <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search for products"
+                    aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">Search</button>
+            </form>
+
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img style="height: 250px; margin-bottom: 2rem;" src="{{ product.pimage.url }}"
+                            alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ product.name }}</h4>
+                            <h5 class="card-price">Price: Ksh {{ product.price }}</h5>
+                            <p class="card-text">{{ product.pdescription }}</p>
+                            <a href="{% url 'nice:add' product.id %}" class="btn btn-primary add-to-cart-btn"
+                                onclick="addToCart(this)">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript function for adding cart animation
+        function addToCart(button) {
+            var icon = button.querySelector('i.fa-shopping-cart');
+            icon.classList.add('cart-animation');
+            setTimeout(function () {
+                icon.classList.remove('cart-animation');
+            }, 1000);
+        }
+
+        // Hide loader and welcome text after 5 seconds
+        window.onload = function () {
+            var loaderContainer = document.getElementById('loader-container');
+            loaderContainer.classList.add('show');
+            setTimeout(function () {
+                loaderContainer.style.display = 'none';
+            }, 5000);
+        };
+    </script>
 </body>
 </html>

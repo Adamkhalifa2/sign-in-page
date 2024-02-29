@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
-    <title>My Cart</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             padding: 20px;
+        }
+        .container {
+            margin-top: 60px; /* Adjusted to accommodate fixed navbar */
         }
         h1 {
             color: #333;
@@ -28,6 +31,7 @@
         }
         img {
             border-radius: 5px;
+            max-width: 100%;
         }
         h3 {
             margin-top: 0;
@@ -49,28 +53,20 @@
             padding: 8px 16px;
             cursor: pointer;
             transition: background-color 0.3s;
-            text-decoration: none; /* Added to remove underline from the anchor tag */
+            text-decoration: none;
         }
         .btn:hover {
             background-color: #0056b3;
         }
         .btn-danger {
             background-color: #dc3545;
-            border: 1px solid #dc3545; /* Added border */
+            border: 1px solid #dc3545;
         }
         .btn-danger:hover {
-            background-color: #bd2130; /* Darker red on hover */
-            border: 1px solid #bd2130; /* Darker red border on hover */
+            background-color: #bd2130;
+            border: 1px solid #bd2130;
         }
-         .navbar {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-          .navbar-side {
+        .navbar-side {
             background-color: #333;
             color: white;
             position: fixed;
@@ -84,14 +80,12 @@
             align-items: center;
             z-index: 998;
         }
-
         .navbar-side i {
             margin-bottom: 15px;
             font-size: 20px;
             cursor: pointer;
             position: relative;
         }
-
         .navbar-side i::after {
             content: attr(data-tooltip);
             position: absolute;
@@ -107,41 +101,48 @@
             transform: translateY(-50%);
             z-index: 999;
         }
-
         .navbar-side i:hover::after {
             opacity: 1;
         }
-
-        .main-content {
-            margin-top: 50px;
-            margin-left: 70px;
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+           background-color: rgba(255, 255, 255, 1); /* Fully opaque background */
+            z-index: 9999;
         }
-         .btn-primary-custom {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none; /* Added to remove underline from the anchor tag */
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
         }
-        .btn-primary-custom:hover {
-            background-color: #0056b3;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+<div class="loader-container" id="loader-container">
+    <div class="loader"></div>
+</div>
 <div class="navbar-side">
-    <a href="http://127.0.0.1:8000/welcome/">
-        <i class="fas fa-home" data-tooltip="Home"></i>
+    <a href="http://127.0.0.1:8000/welcome/" data-tooltip="Home">
+        <i class="fas fa-home"></i>
     </a>
-    <a href="http://127.0.0.1:8000/cart/">
-        <i class="fas fa-heart" data-tooltip="Wishlist"></i>
+    <a href="http://127.0.0.1:8000/cart/" data-tooltip="Wishlist">
+        <i class="fas fa-heart"></i>
     </a>
-    <a href="http://127.0.0.1:8000/update-profile/">
-        <i class="fas fa-user" data-tooltip="User Profile"></i>
+    <a href="http://127.0.0.1:8000/update-profile/" data-tooltip="User Profile">
+        <i class="fas fa-user"></i>
     </a>
 </div>
 <div class="container main-content">
@@ -149,22 +150,16 @@
     <ul>
         {% for item in cart_items %}
             <li>
-                <img src="{{ item.product.pimage.url }}" alt="{{ item.product.name }}" width="200" height="200">
+                 <img src="{{ item.product.pimage.url }}" alt="{{ item.product.name }}" width="200" height="200">
                 <h3>{{ item.product.name }}</h3>
                 <p>{{ item.product.pdescription }}</p>
-                <p>Quantity: 
-                    <!-- Decrease quantity icon -->
-                    <a href="{% url 'nice:decrease_quantity' item.id %}">
-                        <i class="fas fa-minus"></i>
-                    </a>
+                <p>Quantity:
+                    <a href="{% url 'nice:decrease_quantity' item.id %}"><i class="fas fa-minus"></i></a>
                     {{ item.quantity }}
-                    <!-- Increase quantity icon -->
-                    <a href="{% url 'nice:increase_quantity' item.id %}">
-                        <i class="fas fa-plus"></i>
-                    </a>
+                    <a href="{% url 'nice:increase_quantity' item.id %}"><i class="fas fa-plus"></i></a>
                 </p>
                 <p>Price: {{ item.product.price }}</p>
-                <button type="submit" class="btn btn-danger"><a href="{% url 'nice:delete' item.id %}">Delete</a></button>
+                <button class="btn btn-danger"><a href="{% url 'nice:delete' item.id %}" style="color: white;">Delete</a></button>
             </li>
         {% empty %}
             <li>
@@ -173,15 +168,17 @@
         {% endfor %}
     </ul>
     <p class="total-price">Total price: kes {{ price }}</p>
-   <button class="btn-primary-custom">
-  <a href="{% url 'nice:make_payment' %}" style="color: white;">Proceed to Payment with MPESA</a>
-
-</button>
-<button class="btn-primary-custom">
-  <a href="{% url 'nice:payment' %}" style="color: white;">Proceed to Payment with PayPal</a>
-
-</button>
-
+    <button class="btn btn-primary-custom"><a href="{% url 'nice:make_payment' %}" style="color: white;">Proceed to Payment with MPESA</a></button>
+    <button class="btn btn-primary-custom"><a href="{% url 'nice:payment' %}" style="color: white;">Proceed to Payment with PayPal</a></button>
 </div>
+<script>
+    // Hide loader after 6 seconds
+    window.onload = function () {
+        var loaderContainer = document.getElementById('loader-container');
+        setTimeout(function () {
+            loaderContainer.style.display = 'none';
+        }, 5000);
+    };
+</script>
 </body>
 </html>

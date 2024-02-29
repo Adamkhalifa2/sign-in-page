@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>{{ userdets.username }} Profile</h1>
+<div>
+    <img src="{{ userdets.profilepicture.url }}" alt="{{userdets.username}}">
+    
+</div>
+<p>{{ userdets.username }}</p>
+<p>{{userdets.userbio }}</p>
+<button><a href="{% url 'edit_profile' userdets.pk %}">Edit Profile</a></button>
+<button><a href="{% url 'delete_profile' userdets.pk %}">Delete</a></button>
+<a href="{% url 'userprofile' %}">Back to home page</a>
+</body>
+</html>

@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from nice.models import Product, Item, Profile,Payment
+from nice.models import Product, Item, Profile, Payment
+
+# Register your models here.
+
 
 # Register your models here.
 admin.site.register(Product)

@@ -114,11 +114,39 @@
         .navbar-side i:hover::after {
             opacity: 1;
         }
+         .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1); /* Fully opaque white background */
+    z-index: 9999;
+}
 
-       
+.loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
     </style>
 </head>
 <body>
+<div class="loader-container" id="loader-container">
+    <div class="loader"></div>
+</div>
 <div class="navbar-side">
     <a href="http://127.0.0.1:8000/welcome/">
         <i class="fas fa-home" data-tooltip="Home"></i>
@@ -129,15 +157,15 @@
         <form method="post">
             {% csrf_token %}
             <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+            <input type="text" id="first_name" name="first_name" value="{{ user.profile.first_name }}" required>
             <label for="last_name">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+            <input type="text" id="last_name" name="last_name" value="{{ user.profile.last_name }}" required>
             <label for="location">Location:</label>
-            <input type="text" id="location" name="location" value="{{ user.location }}" required>
+            <input type="text" id="location" name="location" value="{{ user.profile.location }}" required>
             <label for="phone_number">Phone Number:</label>
-            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}" required>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.profile.phone_number }}" required>
             <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            <input type="email" id="email" name="email" value="{{ user.profile.email }}" required>
             <button type="submit">Update</button>
         </form>
 
@@ -151,5 +179,14 @@
             <p><strong>Email Address:</strong> {{ user.profile.email }}</p>
         </div>
     </div>
+<script>
+    // Show loader for 5 seconds
+    window.onload = function () {
+        var loaderContainer = document.getElementById('loader-container');
+        setTimeout(function () {
+            loaderContainer.style.display = 'none';
+        }, 3000); // 5 seconds
+    };
+</script>
 </body>
 </html>

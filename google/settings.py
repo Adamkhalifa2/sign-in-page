@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -138,15 +140,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 MPESA_ENVIRONMENT = 'sandbox'
 
 # declare consumer key and consumer secret
@@ -168,7 +169,6 @@ MPESA_INITIATOR_USERNAME = 'testapi'
 MPESA_INITIATOR_SECURITY_CREDENTIAL = 'Safaricom999!*!'
 
 MPESA_PHONE_NUMBER = '254700600163'
-
 
 PAYPAL_CLIENT_ID = 'AUlZ68m72PhnfsArY8fN1YoZfiLV79_IVVXm_zxc2EICuStrrPccHWPDn9au3-njkQczkZ7V66A1c_py'
 PAYPAL_CLIENT_SECRET = 'EM--iPOqsJKBKCjNoMed1PPTg461_D2J8-7stGEloFITGDe4V8tJeDe9AAZDBv5nn1B51pHmdTqNE7DG'
