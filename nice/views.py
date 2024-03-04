@@ -1,6 +1,5 @@
 import paypalrestsdk
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout, authenticate, login
 from django.urls import reverse_lazy
 from django.views import generic
@@ -12,10 +11,14 @@ from paypalrestsdk import Payment
 from twilio.rest import Client
 from google import settings
 from .forms import PaymentForm
-from .models import Product, Item, Profile
+from .models import Product, Item, Profile, Profiles
 from allauth.socialaccount.models import SocialAccount
-
-
+from django.shortcuts import render, redirect, get_object_or_404
+from nice.forms import ProfilesForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import redirect, render
+from .forms import UserRegistrationForm
 
 
 @login_required
@@ -29,7 +32,11 @@ def update_profile(request):
         profile.email = request.POST.get('email', '')
         profile.save()
         return redirect('nice:update_profile')
-    return render(request, 'update_profile.html')
+    return render(request, 'update_profile.html', {'profile': profile})
+
+
+def contact_us(request):
+    return render(request, 'contact_us.html')
 
 
 def home(request):
@@ -38,8 +45,13 @@ def home(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            # If the user exists and the password is correct, log in the user
             login(request, user)
             return redirect('nice:welcome')
+        else:
+            # If the provided credentials are invalid, display an error message
+            error_message = "Invalid username or password."
+            return render(request, 'users/login.html', {'error_message': error_message})
     return render(request, 'users/login.html')
 
 
@@ -53,8 +65,10 @@ def redirect_to_welcome(user):
 def welcome_view(request):
     if request.user.is_authenticated:
         products = Product.objects.all()
+        profiles = Profile.objects.all()
         context = {
-            'products': products
+            'products': products,
+            'profiles': profiles
         }
         return render(request, 'welcome.html', context)
     return redirect('nice:home')
@@ -65,10 +79,34 @@ def logout(request):
     return redirect('/')
 
 
-class SignUpView(generic.CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "users/signup.html"
+def register(request):
+    profile = None
+
+    if request.user.is_authenticated:
+        return redirect("/")
+
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            profile = Profiles.objects.create(user=user)
+
+            # Log in the user
+            login(request, user)
+
+            return redirect('nice:add_profile_photo')
+        else:
+            for error in form.errors.values():
+                print(request, error)
+    else:
+        form = UserRegistrationForm()
+
+    return render(
+        request=request,
+        template_name="register.html",
+        context={"form": form, "profile": profile}
+    )
 
 
 def cart_items(request):
@@ -88,9 +126,12 @@ def add_item(request, product_id):
 
 
 def delete_product(request, item_id):
-    item = Item.objects.get(id=item_id)
-    item.delete()
-    return redirect('nice:cart')
+    try:
+        item = get_object_or_404(Item, id=item_id, user=request.user)
+        item.delete()
+        return redirect('nice:cart')
+    except Item.DoesNotExist:
+        return HttpResponse("Item does not exist.")
 
 
 def search_results(request):
@@ -157,8 +198,18 @@ def make_payment(request):
 
                 user_info = f"User Information:\nName: {user.profile.first_name} {user.profile.last_name}\nEmail: {user.profile.email}\nLocation: {user_profile.location}"
 
+                # Calculate the number of items and identify duplicates
+                num_items = sum(item.quantity for item in cart_items)
+                duplicates = [item.product.name for item in cart_items if item.quantity > 1]
+
+                if duplicates:
+                    duplicate_message = f"Products added more than once: {', '.join(duplicates)}"
+                else:
+                    duplicate_message = "No products added more than once."
+
                 try:
-                    send_notification("254700600163", phone_number, product_details, user_info)
+                    send_notification("+254700600163", phone_number, product_details, user_info, num_items, total_price,
+                                      duplicate_message)
                     cart_items.delete()
                     return HttpResponse("Payment successful! Notification sent.")  # You can customize this message
                 except Exception as e:
@@ -172,14 +223,17 @@ def make_payment(request):
     return render(request, 'payment_form.html', {'total_price': total_price, 'form': form})
 
 
-def send_notification(receiver_phone_number, phone_number, product_details, user_info):
+def send_notification(receiver_phone_number, phone_number, product_details, user_info, num_items, total_price, duplicate_message):
     account_sid = 'ACbca216ca2dd1774bf9f022f637852eb3'
-    auth_token = '8c143f7a120015ac5f07e4873d725bb9'
-    twilio_phone_number = '14242066602'
+    auth_token = '26506fc36826a930914a2d1ad09afa23'
+    twilio_phone_number = '+14242066602'
 
     client = Client(account_sid, auth_token)
 
     message_body = f"Client with phone number {phone_number} has made a successful payment.\n\n"
+    message_body += f"Number of items: {num_items}\n"
+    message_body += f"Total price: kes {total_price}\n\n"
+    message_body += f"Products added more than once: {duplicate_message}\n\n"
     message_body += "Product Details:\n" + product_details + "\n\n"
     message_body += user_info
 
@@ -189,11 +243,10 @@ def send_notification(receiver_phone_number, phone_number, product_details, user
         to=receiver_phone_number
     )
 
-
 def make_payment_api_call(total_price, phone_number):
     url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
     headers = {
-        'Authorization': 'Bearer cy60tXBHlEhuUWkeeom4VAGEBQo7',
+        'Authorization': 'Bearer xIFBewUAS8aALO4oP5iwmANb3vvO',
         'Content-Type': 'application/json'
     }
     data = {
@@ -273,3 +326,18 @@ def payment(request):
             return HttpResponse("Payment creation failed. Please try again.")
 
     return render(request, 'payment.html')
+
+
+def add_profile_photo(request):
+    # Check if the user already has a profile picture
+    existing_profile = get_object_or_404(Profiles, user=request.user)
+
+    if request.method == 'POST':
+        profile_form = ProfilesForm(request.POST, request.FILES, instance=existing_profile)
+        if profile_form.is_valid():
+            profile = profile_form.save()
+            return redirect('nice:welcome')
+    else:
+        profile_form = ProfilesForm(instance=existing_profile)
+
+    return render(request, 'add_profile_photo.html', {'profile_form': profile_form})

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled Project</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+        }
+
+        /* Set the div to cover the whole screen */
+        .visme_d {
+            width: 100%;
+            height: 100%;
+        }
+
+        .navbar-side {
+            background-color: #333;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+        }
+
+        .navbar-side i {
+            margin-bottom: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-side i::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+            z-index: 999;
+        }
+
+        .navbar-side i:hover::after {
+            opacity: 1;
+        }
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 1); /* Fully opaque white background */
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="loader-container" id="loader-container">
+    <div class="loader"></div>
+</div>
+<div class="navbar-side" id="navbar-side">
+    <a href="http://127.0.0.1:8000/welcome/">
+        <i class="fas fa-home" data-tooltip="Home"></i>
+    </a>
+</div>
+
+<div class="visme_d" data-title="Untitled Project" data-url="kkjn0jxv-untitled-project?fullPage=true" data-domain="forms" data-full-page="true" data-min-height="100vh" data-form-id="39082"></div>
+    
+<!-- Embed script -->
+<script src="https://static-bundles.visme.co/forms/vismeforms-embed.js"></script>
+<script>
+    // Show loader for 3 seconds
+    window.onload = function () {
+        var loaderContainer = document.getElementById('loader-container');
+        setTimeout(function () {
+            loaderContainer.style.display = 'none';
+            document.getElementById('navbar-side').style.display = 'flex'; // Display the navbar
+        }, 3000); // 3 seconds
+    };
+</script>
+</body>
+</html>

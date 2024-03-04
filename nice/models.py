@@ -42,4 +42,9 @@ class Payment(models.Model):
         return f"Payment of {self.product.price} made by {self.phone_number}"
 
 
+class Profiles(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
+    def __str__(self):
+        return self.user.username
